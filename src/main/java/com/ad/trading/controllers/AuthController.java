@@ -1,6 +1,8 @@
 package com.ad.trading.controllers;
 
+import com.ad.trading.domain.VerificationType;
 import com.ad.trading.modals.TwoFactorOTP;
+import com.ad.trading.modals.VerificationCode;
 import com.ad.trading.services.CustomUserDetailsService;
 import com.ad.trading.config.JwtProvider;
 import com.ad.trading.modals.User;
@@ -118,6 +120,7 @@ public class AuthController {
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
     }
 
+    @PostMapping("/two-factor/otp/{otp}")
     public ResponseEntity<AuthResponse> verifySigningOtp(@PathVariable String otp, @RequestParam String id) {
         TwoFactorOTP twoFactorOTP = twoFactorOtpService.findById(id);
         if(twoFactorOtpService.verifyTwoFactorOtp(twoFactorOTP, otp)) {
