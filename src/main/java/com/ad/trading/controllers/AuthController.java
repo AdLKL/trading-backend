@@ -1,8 +1,6 @@
 package com.ad.trading.controllers;
 
-import com.ad.trading.domain.VerificationType;
 import com.ad.trading.modals.TwoFactorOTP;
-import com.ad.trading.modals.VerificationCode;
 import com.ad.trading.services.CustomUserDetailsService;
 import com.ad.trading.config.JwtProvider;
 import com.ad.trading.modals.User;
