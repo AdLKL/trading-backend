@@ -4,6 +4,7 @@ import com.ad.trading.modals.Order;
 import com.ad.trading.modals.User;
 import com.ad.trading.modals.Wallet;
 import com.ad.trading.modals.WalletTransaction;
+import com.ad.trading.services.OrderService;
 import com.ad.trading.services.UserService;
 import com.ad.trading.services.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class WalletController {
     private final WalletService walletService;
     private final UserService userService;
+    private final OrderService orderService;
 
     @Autowired
-    public WalletController(WalletService walletService, UserService userService) {
+    public WalletController(WalletService walletService, UserService userService, OrderService orderService) {
         this.walletService = walletService;
         this.userService = userService;
+        this.orderService = orderService;
     }
 
     @GetMapping
@@ -45,6 +48,10 @@ public class WalletController {
                                                   @PathVariable Long orderId) throws Exception {
         User user = userService.findUserProfileByJwt(jwt);
 
-        return null;
+        Order order = orderService.getOrderById(orderId);
+
+        Wallet wallet = walletService.payOrderPayment(order, user);
+
+        return new ResponseEntity<>(wallet, HttpStatus.ACCEPTED);
     }
 }
