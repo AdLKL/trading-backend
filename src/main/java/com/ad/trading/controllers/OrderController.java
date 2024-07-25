@@ -8,7 +8,6 @@ import com.ad.trading.requests.CreateOrderRequest;
 import com.ad.trading.services.CoinService;
 import com.ad.trading.services.OrderService;
 import com.ad.trading.services.UserService;
-import com.ad.trading.services.WalletTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +21,14 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
     private final CoinService coinService;
-    private final WalletTransactionService walletTransactionService;
+    //private final WalletTransactionService walletTransactionService;
 
     @Autowired
-    public OrderController(OrderService orderService, UserService userService, CoinService coinService, WalletTransactionService walletTransactionService) {
+    public OrderController(OrderService orderService, UserService userService, CoinService coinService) {
         this.orderService = orderService;
         this.userService = userService;
         this.coinService = coinService;
-        this.walletTransactionService = walletTransactionService;
+        //this.walletTransactionService = walletTransactionService;
     }
 
     @PostMapping("/pay")
