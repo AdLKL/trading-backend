@@ -9,7 +9,6 @@ import com.ad.trading.responses.PaymentResponse;
 import com.ad.trading.services.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setAmount(amount);
         order.setPaymentMethod(paymentMethod);
         order.setUser(user);
+        order.setStatus(PaymentOrderStatus.PENDING);
         return paymentOrderRepository.save(order);
     }
 
@@ -42,24 +42,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Boolean proceedPaymentOrder(PaymentOrder paymentOrder, String paymentId) throws StripeException {
+    public Boolean proceedPaymentOrder(PaymentOrder paymentOrder) {
         Stripe.apiKey = stripeSecretKey;
 
         if (paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING)) {
             if (paymentOrder.getPaymentMethod().equals(PaymentMethod.STRIPE)) {
-                PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentId);
-                Long amountReceived = paymentIntent.getAmountReceived();
-                String status = paymentIntent.getStatus();
-
-                if (status.equals("captured")) {
-                    paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
-                    paymentOrderRepository.save(paymentOrder);
-                    return true;
-                } else {
-                    paymentOrder.setStatus(PaymentOrderStatus.FAILED);
-                    paymentOrderRepository.save(paymentOrder);
-                    return false;
-                }
+                paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
+                paymentOrderRepository.save(paymentOrder);
+                return true;
             }
             paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
             paymentOrderRepository.save(paymentOrder);
@@ -96,6 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentResponse res = new PaymentResponse();
         res.setPaymentUrl(session.getUrl());
+        res.setPaymentId(session.getId());
 
         return res;
     }

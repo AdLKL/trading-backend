@@ -1,8 +1,11 @@
 package com.ad.trading.controllers;
 
+import com.ad.trading.domain.WalletTransactionType;
 import com.ad.trading.modals.User;
 import com.ad.trading.modals.Wallet;
+import com.ad.trading.modals.WalletTransaction;
 import com.ad.trading.modals.Withdrawal;
+import com.ad.trading.services.TransactionService;
 import com.ad.trading.services.UserService;
 import com.ad.trading.services.WalletService;
 import com.ad.trading.services.WithdrawalService;
@@ -18,24 +21,27 @@ public class WithdrawalController {
     private final WithdrawalService withdrawalService;
     private final WalletService walletService;
     private final UserService userService;
-    //private final WalletTransactionService walletTransactionService;
+    private final TransactionService transactionService;
 
     @Autowired
-    public WithdrawalController(WithdrawalService withdrawalService, WalletService walletService, UserService userService) {
+    public WithdrawalController(WithdrawalService withdrawalService, WalletService walletService, UserService userService, TransactionService transactionService) {
         this.withdrawalService = withdrawalService;
         this.walletService = walletService;
         this.userService = userService;
-        //this.walletTransactionService = walletTransactionService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping("/api/withdrawal/{amount}")
     public ResponseEntity<?> withdrawalRequest(@PathVariable Long amount,
-                                               @RequestHeader("Authorization0") String jwt) throws Exception {
+                                               @RequestHeader("Authorization") String jwt) throws Exception {
         User user = userService.findUserProfileByJwt(jwt);
         Wallet userWallet = walletService.getUserWallet(user);
 
         Withdrawal withdrawal = withdrawalService.requestWithdrawal(amount, user);
         walletService.addBalance(userWallet, -withdrawal.getAmount());
+
+        WalletTransaction walletTransaction = transactionService.createTransaction(userWallet,
+                WalletTransactionType.WITHDRAWAL, null, "bank account withdrawal", withdrawal.getAmount());
 
         return new ResponseEntity<>(withdrawal, HttpStatus.OK);
     }

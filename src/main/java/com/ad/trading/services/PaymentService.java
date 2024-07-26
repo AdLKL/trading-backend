@@ -9,7 +9,7 @@ import com.stripe.exception.StripeException;
 public interface PaymentService {
     PaymentOrder createOrder(User user, Long amount, PaymentMethod paymentMethod);
     PaymentOrder getPaymentOrderById(Long id) throws Exception;
-    Boolean proceedPaymentOrder(PaymentOrder paymentOrder, String paymentId) throws Exception;
+    Boolean proceedPaymentOrder(PaymentOrder paymentOrder) throws Exception;
     PaymentResponse createStripePaymentLink(User user, Long amount, Long orderId) throws StripeException;
 
 }
