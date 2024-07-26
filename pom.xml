@@ -79,11 +79,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.razorpay</groupId>
-			<artifactId>razorpay-java</artifactId>
-			<version>1.4.5</version>
-		</dependency>
-		<dependency>
 			<groupId>com.stripe</groupId>
 			<artifactId>stripe-java</artifactId>
 			<version>26.3.0</version>

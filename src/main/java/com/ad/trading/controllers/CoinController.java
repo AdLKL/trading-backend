@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/coins")
+@RequestMapping("/api/coins")
 public class CoinController {
     private final CoinService coinService;
     private final ObjectMapper objectMapper;
@@ -25,7 +25,7 @@ public class CoinController {
     }
 
     @GetMapping
-    ResponseEntity<List<Coin>> getCoinList(@RequestParam("page") int page) throws Exception {
+    ResponseEntity<List<Coin>> getCoinList(@RequestParam(required = false, name = "page") int page) throws Exception {
         List<Coin> coins = coinService.getCoinList(page);
         return new ResponseEntity<>(coins, HttpStatus.ACCEPTED);
     }
@@ -51,9 +51,9 @@ public class CoinController {
         return ResponseEntity.ok(jsonNode);
     }
 
-    @GetMapping("/trading")
+    @GetMapping("/trending")
     ResponseEntity<JsonNode> getTradingCoin() throws Exception {
-        String coin = coinService.getTradingCoins();
+        String coin = coinService.getTrendingCoins();
         JsonNode jsonNode = objectMapper.readTree(coin);
         return ResponseEntity.ok(jsonNode);
     }
@@ -63,5 +63,11 @@ public class CoinController {
         String coin = coinService.getCoinDetails(coinId);
         JsonNode jsonNode = objectMapper.readTree(coin);
         return ResponseEntity.ok(jsonNode);
+    }
+
+    @GetMapping("/{coinId}")
+    ResponseEntity<Coin> getCoin(@PathVariable String coinId) throws Exception {
+        Coin coin = coinService.findById(coinId);
+        return ResponseEntity.ok(coin);
     }
 }

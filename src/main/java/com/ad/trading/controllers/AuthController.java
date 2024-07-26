@@ -8,6 +8,7 @@ import com.ad.trading.repositories.UserRepository;
 import com.ad.trading.responses.AuthResponse;
 import com.ad.trading.services.EmailService;
 import com.ad.trading.services.TwoFactorOtpService;
+import com.ad.trading.services.WatchlistService;
 import com.ad.trading.utils.OtpUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +28,15 @@ public class AuthController {
     private final CustomUserDetailsService customUserDetailsService;
     private final TwoFactorOtpService twoFactorOtpService;
     private final EmailService emailService;
+    private final WatchlistService watchlistService;
 
     @Autowired
-    public AuthController(UserRepository userRepository, CustomUserDetailsService customUserDetailsService, TwoFactorOtpService twoFactorOtpService, EmailService emailService) {
+    public AuthController(UserRepository userRepository, CustomUserDetailsService customUserDetailsService, TwoFactorOtpService twoFactorOtpService, EmailService emailService, WatchlistService watchlistService) {
         this.userRepository = userRepository;
         this.customUserDetailsService = customUserDetailsService;
         this.twoFactorOtpService = twoFactorOtpService;
         this.emailService = emailService;
+        this.watchlistService = watchlistService;
     }
 
     @PostMapping("/signup")
@@ -49,6 +52,8 @@ public class AuthController {
         newUser.setPassword(user.getPassword());
 
         User savedUser = userRepository.save(newUser);
+
+        watchlistService.createWatchlist(savedUser);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
 
