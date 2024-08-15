@@ -86,7 +86,6 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentResponse res = new PaymentResponse();
         res.setPaymentUrl(session.getUrl());
-        res.setPaymentId(session.getId());
 
         return res;
     }
